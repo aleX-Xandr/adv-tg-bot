@@ -13,8 +13,8 @@ from keyboards.skip import skip_kb
 from utils.channel_store import load_channels
 from utils.google_sheets import append_row
 
-
 router = Router()
+
 
 class PostStates(StatesGroup):
     date = State()
@@ -23,7 +23,6 @@ class PostStates(StatesGroup):
     manufacturer = State()
     photos = State()
     price = State()
-
 
 async def send_post(bot, chat_id, data) -> Message:
 
@@ -122,7 +121,6 @@ async def get_price(message: Message, state: FSMContext):
         "Вот превью бота, подтвердите начало рассылки если все указано верно:",
         reply_markup=confirm_kb
     )
-
 
 @router.callback_query(F.data == "approve_send_post")
 async def skip_photo(callback: CallbackQuery, state: FSMContext):
