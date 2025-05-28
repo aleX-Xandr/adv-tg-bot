@@ -1,0 +1,13 @@
+Күні: {date}
+Жүкқұжат: {invoice}
+Бренд: {brand}
+Өндіруші: {manufacturer}
+Фотосуреттер саны: {photo_count}
+Қорап бағасы: {price}
+
+Дата: {date}
+Накладная: {invoice}
+Бренд: {brand}
+Производитель: {manufacturer}
+Количество фото: {photo_count}
+Цена за коробку: {price}
