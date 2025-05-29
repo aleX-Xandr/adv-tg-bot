@@ -62,7 +62,7 @@ async def get_date_callback(callback: CallbackQuery, state: FSMContext):
         delta_date = current_date - user_date
         if delta_date.days > DAYS_DELTA:
             await callback.message.edit_text(
-                "Дата слишком старая. Введите дату не старше 2 дней от текущей.",
+                f"Дата слишком старая ({delta_date.days}). Введите дату не старше 2 дней от текущей.",
                 reply_markup=PostKeyboards.date_kb()
             )
             return
