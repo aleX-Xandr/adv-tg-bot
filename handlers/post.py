@@ -152,12 +152,14 @@ async def skip_photo(callback: CallbackQuery, state: FSMContext):
         "\n".join(post_links)
     ])
 
-    await callback.message.answer("Пост отправлен по всем каналам ✅", reply_markup=main_menu())
     await state.clear()
     await callback.answer()
+    await callback.message.delete()
+    await callback.message.answer("Пост отправлен по всем каналам ✅", reply_markup=main_menu())
 
 @router.callback_query(F.data == "cancel_send_post")
 async def cancel_post(callback: CallbackQuery, state: FSMContext):
     await state.clear()
-    await callback.message.answer("Публикация отменена ❌", reply_markup=main_menu())
     await callback.answer()
+    await callback.message.delete()
+    await callback.message.answer("Публикация отменена ❌", reply_markup=main_menu())
