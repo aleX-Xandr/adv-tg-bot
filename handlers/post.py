@@ -50,7 +50,7 @@ async def send_post(bot, chat_id, data) -> Message:
 
 @router.message(F.text == "Добавить пост")
 async def start_post(message: Message, state: FSMContext):
-    await message.answer("Выберите дату или введите дату в формате ДД.ММ.ГГГГ::", reply_markup=PostKeyboards.date_kb())
+    await message.answer("Выберите дату:", reply_markup=PostKeyboards.date_kb())
     await state.set_state(PostStates.date)
 
 @router.callback_query(PostStates.date, F.data.startswith("date:"))
@@ -73,23 +73,6 @@ async def get_date_callback(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer("Неверный формат. Повторите в формате ДД.ММ.ГГГГ")
     finally:
         await callback.answer()
-
-@router.message(PostStates.date)
-async def get_date(message: Message, state: FSMContext):
-    try:
-        datetime.datetime.strptime(message.text, "%d.%m.%Y")
-        user_date = datetime.datetime.strptime(message.text, "%d.%m.%Y").date()
-        current_date = datetime.datetime.now().date()
-        delta_date = current_date - user_date
-        if delta_date.days > DAYS_DELTA:
-            await message.answer("Дата слишком старая. Введите дату не старше 2 дней от текущей.")
-            return
-
-        await state.update_data(date=message.text)
-        await message.answer("Введите идентификатор накладной:")
-        await state.set_state(PostStates.invoice)
-    except ValueError:
-        await message.answer("Неверный формат. Повторите в формате ДД.ММ.ГГГГ")
 
 @router.message(PostStates.invoice)
 async def get_invoice(message: Message, state: FSMContext):
