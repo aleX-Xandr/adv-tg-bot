@@ -19,7 +19,6 @@ class PostKeyboards:
     brand_kb = build_keyboard_from_list(data.get("brand", []), prefix="brand")
     company_kb = build_keyboard_from_list(data.get("company", []), prefix="company")
 
-    @property
     @staticmethod
     def date_kb():
         today = datetime.now().date()

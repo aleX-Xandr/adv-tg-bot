@@ -50,7 +50,7 @@ async def send_post(bot, chat_id, data) -> Message:
 
 @router.message(F.text == "Добавить пост")
 async def start_post(message: Message, state: FSMContext):
-    await message.answer("Выберите дату или введите дату в формате ДД.ММ.ГГГГ::", reply_markup=PostKeyboards.date_kb)
+    await message.answer("Выберите дату или введите дату в формате ДД.ММ.ГГГГ::", reply_markup=PostKeyboards.date_kb())
     await state.set_state(PostStates.date)
 
 @router.callback_query(PostStates.date, F.data.startswith("date:"))
@@ -63,7 +63,7 @@ async def get_date_callback(callback: CallbackQuery, state: FSMContext):
         if delta_date.days > DAYS_DELTA:
             await callback.message.edit_text(
                 "Дата слишком старая. Введите дату не старше 2 дней от текущей.",
-                reply_markup=PostKeyboards.date_kb
+                reply_markup=PostKeyboards.date_kb()
             )
             return
         await state.update_data(date=date)
