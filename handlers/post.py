@@ -97,7 +97,7 @@ async def collect_photo(message: Message, state: FSMContext):
     data = await state.get_data()
     data["photos"].append(message.photo[-1].file_id)
     await state.update_data(photos=data["photos"])
-    await message.answer("Добавьте ещё или нажмите 'Пропустить'")
+    await message.answer("Добавьте ещё или нажмите 'Пропустить'", reply_markup=skip_kb)
 
 @router.callback_query(PostStates.photos, F.data == "skip_photo")
 async def skip_photo(callback: CallbackQuery, state: FSMContext):
