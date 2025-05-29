@@ -56,6 +56,7 @@ async def start_post(message: Message, state: FSMContext):
 @router.callback_query(PostStates.date, F.data.startswith("date:"))
 async def get_date_callback(callback: CallbackQuery, state: FSMContext):
     date = callback.data.split(":", 1)[1]
+    print(date)
     try:
         user_date = datetime.datetime.strptime(date, "%d-%m-%Y").date()
         current_date = datetime.datetime.now().date()
