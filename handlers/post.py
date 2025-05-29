@@ -57,7 +57,7 @@ async def start_post(message: Message, state: FSMContext):
 async def get_date_callback(callback: CallbackQuery, state: FSMContext):
     date = callback.data.split(":", 1)[1]
     try:
-        user_date = datetime.datetime.strptime(date, "%d.%m.%Y").date()
+        user_date = datetime.datetime.strptime(date, "%d-%m-%Y").date()
         current_date = datetime.datetime.now().date()
         delta_date = current_date - user_date
         if delta_date.days > DAYS_DELTA:
