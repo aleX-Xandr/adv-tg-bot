@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 from config import DAYS_DELTA
 from keyboards.confirm import confirm_kb
 from keyboards.menu import main_menu
-from keyboards.post import brand_kb, company_kb
+from keyboards.post import PostKeyboards
 from keyboards.skip import skip_kb
 from utils.channel_store import load_channels
 from utils.google_sheets import append_row
@@ -50,8 +50,29 @@ async def send_post(bot, chat_id, data) -> Message:
 
 @router.message(F.text == "Добавить пост")
 async def start_post(message: Message, state: FSMContext):
-    await message.answer("Введите дату в формате ДД.ММ.ГГГГ:")
+    await message.answer("Выберите дату или введите дату в формате ДД.ММ.ГГГГ::", reply_markup=PostKeyboards.date_kb)
     await state.set_state(PostStates.date)
+
+@router.callback_query(PostStates.date, F.data.startswith("date:"))
+async def get_date_callback(callback: CallbackQuery, state: FSMContext):
+    date = callback.data.split(":", 1)[1]
+    try:
+        user_date = datetime.datetime.strptime(date, "%d.%m.%Y").date()
+        current_date = datetime.datetime.now().date()
+        delta_date = current_date - user_date
+        if delta_date.days > DAYS_DELTA:
+            await callback.message.edit_text(
+                "Дата слишком старая. Введите дату не старше 2 дней от текущей.",
+                reply_markup=PostKeyboards.date_kb
+            )
+            return
+        await state.update_data(date=date)
+        await callback.message.answer("Введите идентификатор накладной:")
+        await state.set_state(PostStates.invoice)
+    except ValueError:
+        await callback.message.answer("Неверный формат. Повторите в формате ДД.ММ.ГГГГ")
+    finally:
+        await callback.answer()
 
 @router.message(PostStates.date)
 async def get_date(message: Message, state: FSMContext):
@@ -73,14 +94,14 @@ async def get_date(message: Message, state: FSMContext):
 @router.message(PostStates.invoice)
 async def get_invoice(message: Message, state: FSMContext):
     await state.update_data(invoice=message.text)
-    await message.answer("Введите бренд:", reply_markup=brand_kb)
+    await message.answer("Введите бренд:", reply_markup=PostKeyboards.brand_kb)
     await state.set_state(PostStates.brand)
 
 @router.callback_query(PostStates.brand, F.data.startswith("brand:"))
 async def get_brand_callback(callback: CallbackQuery, state: FSMContext):
     brand = callback.data.split(":", 1)[1]
     await state.update_data(brand=brand)
-    await callback.message.edit_text("Выберите производителя:", reply_markup=company_kb)
+    await callback.message.edit_text("Выберите производителя:", reply_markup=PostKeyboards.company_kb)
     await state.set_state(PostStates.manufacturer)
     await callback.answer()
 
@@ -154,5 +175,5 @@ async def skip_photo(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data == "cancel_send_post")
 async def cancel_post(callback: CallbackQuery, state: FSMContext):
     await state.clear()
-    await callback.message.edit_text("Публикация отменена ❌", reply_markup=main_menu())
+    await callback.message.answer("Публикация отменена ❌", reply_markup=main_menu())
     await callback.answer()
