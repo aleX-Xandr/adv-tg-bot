@@ -16,4 +16,4 @@ async def cmd_start(message: Message, state: FSMContext):
 async def channel_shared(message: Message):
     chat_id = message.chat_shared.chat_id
     save_channel(chat_id)
-    await message.answer(f"Канал добавлен: {chat_id}")
+    await message.answer(f"Чат добавлен: {chat_id}")
