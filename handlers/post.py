@@ -117,7 +117,15 @@ async def skip_photo(callback: CallbackQuery, state: FSMContext):
 
 @router.message(PostStates.price)
 async def get_price(message: Message, state: FSMContext):
-
+    def is_number(s: str) -> bool:
+        try:
+            float(s)
+            return True
+        except ValueError:
+            return False    
+    if not is_number(message.text):
+        await message.answer("Цена должна быть числом. Попробуйте еще раз:")
+        return
     await state.update_data(price=message.text)
     data = await state.get_data()
 
